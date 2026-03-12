@@ -1,0 +1,1286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OOP Interview Crash Course</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0e1a;
+    --surface: #111827;
+    --card: #1a2235;
+    --border: #1e3a5f;
+    --accent: #00d4ff;
+    --accent2: #ff6b35;
+    --accent3: #7c3aed;
+    --green: #00e676;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --cpp: #00bcd4;
+    --java: #ff9800;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Syne', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  /* Animated background */
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: radial-gradient(ellipse at 20% 20%, rgba(0,212,255,0.07) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 80%, rgba(124,58,237,0.07) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .container { max-width: 1100px; margin: 0 auto; padding: 0 20px; position: relative; z-index: 1; }
+
+  /* Header */
+  header {
+    padding: 40px 0 30px;
+    text-align: center;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 40px;
+  }
+  .badge {
+    display: inline-block;
+    background: linear-gradient(135deg, rgba(0,212,255,0.15), rgba(124,58,237,0.15));
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    padding: 4px 16px;
+    border-radius: 20px;
+    font-size: 12px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  h1 {
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 800;
+    background: linear-gradient(135deg, #fff 0%, var(--accent) 50%, var(--accent3) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1.1;
+  }
+  .subtitle { color: var(--muted); margin-top: 10px; font-size: 1rem; }
+
+  /* Progress bar */
+  .progress-bar {
+    background: var(--surface);
+    border-radius: 4px;
+    height: 4px;
+    margin: 20px 0;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent3));
+    border-radius: 4px;
+    transition: width 0.5s ease;
+    width: 0%;
+  }
+
+  /* Nav Tabs */
+  .nav-tabs {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+    margin-bottom: 32px;
+    scrollbar-width: none;
+  }
+  .nav-tabs::-webkit-scrollbar { display: none; }
+  .tab-btn {
+    flex-shrink: 0;
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--muted);
+    cursor: pointer;
+    font-family: 'Syne', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .tab-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .tab-btn.active {
+    background: linear-gradient(135deg, rgba(0,212,255,0.15), rgba(124,58,237,0.1));
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  /* Sections */
+  .section { display: none; animation: fadeIn 0.3s ease; }
+  .section.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* Concept Card */
+  .concept-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    margin-bottom: 24px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+  .concept-card:hover { border-color: rgba(0,212,255,0.3); }
+  .concept-header {
+    padding: 20px 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .concept-icon {
+    width: 44px; height: 44px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.3rem;
+    flex-shrink: 0;
+  }
+  .concept-title { font-size: 1.1rem; font-weight: 700; }
+  .concept-desc { font-size: 0.85rem; color: var(--muted); margin-top: 3px; }
+  .expand-arrow {
+    margin-left: auto;
+    color: var(--muted);
+    transition: transform 0.3s;
+    font-size: 1.2rem;
+  }
+  .concept-card.open .expand-arrow { transform: rotate(180deg); }
+  .concept-body {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease;
+  }
+  .concept-card.open .concept-body { max-height: 3000px; }
+  .concept-content { padding: 0 24px 24px; }
+
+  /* Definition box */
+  .def-box {
+    background: rgba(0,212,255,0.05);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 8px 8px 0;
+    padding: 14px 18px;
+    margin-bottom: 20px;
+    font-size: 0.95rem;
+    line-height: 1.7;
+  }
+  .def-box strong { color: var(--accent); }
+
+  /* Key Points */
+  .key-points { margin-bottom: 20px; }
+  .key-points h4 { color: var(--green); font-size: 0.8rem; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px; }
+  .kp-item {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: #c4d0e0;
+  }
+  .kp-item:last-child { border-bottom: none; }
+  .kp-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); margin-top: 7px; flex-shrink: 0; }
+
+  /* Code Tabs */
+  .code-tabs { margin-top: 16px; }
+  .code-tab-btns { display: flex; gap: 0; margin-bottom: 0; }
+  .code-tab-btn {
+    padding: 8px 20px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--muted);
+    cursor: pointer;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    font-weight: 700;
+    transition: all 0.2s;
+    border-bottom: none;
+  }
+  .code-tab-btn:first-child { border-radius: 8px 0 0 0; }
+  .code-tab-btn:last-child { border-radius: 0 8px 0 0; }
+  .code-tab-btn.active[data-lang="cpp"] { background: rgba(0,188,212,0.1); color: var(--cpp); border-color: var(--cpp); }
+  .code-tab-btn.active[data-lang="java"] { background: rgba(255,152,0,0.1); color: var(--java); border-color: var(--java); }
+  .code-pane { display: none; }
+  .code-pane.active { display: block; }
+  pre {
+    background: #0d1117;
+    border: 1px solid var(--border);
+    border-top: none;
+    border-radius: 0 0 8px 8px;
+    padding: 20px;
+    overflow-x: auto;
+    position: relative;
+  }
+  pre code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.82rem;
+    line-height: 1.75;
+    color: #e2e8f0;
+  }
+  .cpp-label { position: absolute; top: 10px; right: 14px; font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--cpp); letter-spacing: 1px; }
+  .java-label { position: absolute; top: 10px; right: 14px; font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--java); letter-spacing: 1px; }
+
+  /* Syntax highlighting */
+  .kw { color: #ff79c6; }
+  .cl { color: #8be9fd; }
+  .fn { color: #50fa7b; }
+  .str { color: #f1fa8c; }
+  .cm { color: #6272a4; font-style: italic; }
+  .num { color: #bd93f9; }
+  .ann { color: #ff5555; }
+
+  /* Quiz Section */
+  .quiz-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 20px;
+  }
+  .quiz-q { font-size: 1rem; font-weight: 600; margin-bottom: 16px; line-height: 1.6; }
+  .quiz-q span { color: var(--accent); font-family: 'JetBrains Mono', monospace; }
+  .quiz-options { display: flex; flex-direction: column; gap: 10px; }
+  .quiz-opt {
+    padding: 12px 18px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+    background: var(--surface);
+  }
+  .quiz-opt:hover { border-color: var(--accent); color: var(--accent); }
+  .quiz-opt.correct { border-color: var(--green); background: rgba(0,230,118,0.1); color: var(--green); }
+  .quiz-opt.wrong { border-color: #ef4444; background: rgba(239,68,68,0.1); color: #ef4444; }
+  .quiz-explanation {
+    margin-top: 14px;
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    line-height: 1.6;
+    display: none;
+  }
+  .quiz-explanation.show { display: block; }
+  .quiz-explanation.correct-exp { background: rgba(0,230,118,0.08); border: 1px solid rgba(0,230,118,0.3); color: #a7f3d0; }
+  .quiz-explanation.wrong-exp { background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.3); color: #fca5a5; }
+
+  /* Cheat Sheet */
+  .cheat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+  .cheat-item {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px;
+  }
+  .cheat-item h4 { font-size: 0.75rem; letter-spacing: 2px; text-transform: uppercase; color: var(--accent); margin-bottom: 10px; }
+  .cheat-item p { font-size: 0.875rem; color: #c4d0e0; line-height: 1.6; }
+  .cheat-item code { font-family: 'JetBrains Mono', monospace; background: rgba(0,212,255,0.1); padding: 2px 6px; border-radius: 4px; font-size: 0.8rem; color: var(--accent); }
+
+  /* Comparison Table */
+  .comp-table { width: 100%; border-collapse: collapse; margin: 16px 0; }
+  .comp-table th { background: rgba(0,212,255,0.1); padding: 12px 16px; text-align: left; font-size: 0.85rem; color: var(--accent); border: 1px solid var(--border); }
+  .comp-table td { padding: 11px 16px; border: 1px solid var(--border); font-size: 0.875rem; color: #c4d0e0; vertical-align: top; line-height: 1.5; }
+  .comp-table tr:nth-child(even) td { background: rgba(255,255,255,0.02); }
+  .yes { color: var(--green); font-weight: 700; }
+  .no { color: #ef4444; font-weight: 700; }
+
+  /* Score display */
+  .score-display {
+    background: linear-gradient(135deg, rgba(0,212,255,0.1), rgba(124,58,237,0.1));
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+    text-align: center;
+    margin-bottom: 28px;
+  }
+  .score-num { font-size: 3rem; font-weight: 800; background: linear-gradient(135deg, var(--accent), var(--accent3)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .score-label { color: var(--muted); font-size: 0.9rem; }
+
+  /* Responsive */
+  @media (max-width: 600px) {
+    .concept-header { padding: 16px; }
+    .concept-content { padding: 0 16px 16px; }
+    h1 { font-size: 1.8rem; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="badge">🎯 Interview Prep</div>
+    <h1>OOP Complete Guide</h1>
+    <p class="subtitle">C++ & Java — Everything you need for tomorrow's interview</p>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    <small style="color:var(--muted); font-size:0.75rem;">Expand topics to track your progress</small>
+  </header>
+
+  <nav class="nav-tabs">
+    <button class="tab-btn active" onclick="showTab('concepts')">📚 Core Concepts</button>
+    <button class="tab-btn" onclick="showTab('pillars')">🏛️ 4 Pillars</button>
+    <button class="tab-btn" onclick="showTab('advanced')">⚡ Advanced</button>
+    <button class="tab-btn" onclick="showTab('compare')">🔄 C++ vs Java</button>
+    <button class="tab-btn" onclick="showTab('quiz')">🧠 Quiz</button>
+    <button class="tab-btn" onclick="showTab('cheatsheet')">📋 Cheat Sheet</button>
+  </nav>
+
+  <!-- ==================== CORE CONCEPTS ==================== -->
+  <div class="section active" id="tab-concepts">
+
+    <!-- Class & Object -->
+    <div class="concept-card" onclick="toggleCard(this)">
+      <div class="concept-header">
+        <div class="concept-icon" style="background:rgba(0,212,255,0.1)">🏗️</div>
+        <div>
+          <div class="concept-title">Class & Object</div>
+          <div class="concept-desc">Blueprint and its instances</div>
+        </div>
+        <div class="expand-arrow">▼</div>
+      </div>
+      <div class="concept-body"><div class="concept-content">
+        <div class="def-box"><strong>Class</strong> = a blueprint/template that defines attributes (data) and methods (behavior). <strong>Object</strong> = a real-world instance created from that class.</div>
+        <div class="key-points">
+          <h4>Key Points</h4>
+          <div class="kp-item"><div class="kp-dot"></div>A class is like a cookie-cutter; objects are the cookies</div>
+          <div class="kp-item"><div class="kp-dot"></div>Class is declared once; objects can be created many times</div>
+          <div class="kp-item"><div class="kp-dot"></div>Each object has its own copy of member variables (non-static)</div>
+          <div class="kp-item"><div class="kp-dot"></div>Objects communicate via method calls</div>
+        </div>
+        <div class="code-tabs">
+          <div class="code-tab-btns">
+            <button class="code-tab-btn active" data-lang="cpp" onclick="switchCode(this, 'cls-cpp')">C++</button>
+            <button class="code-tab-btn" data-lang="java" onclick="switchCode(this, 'cls-java')">Java</button>
+          </div>
+          <div class="code-pane active" id="cls-cpp">
+            <pre><span class="cpp-label">C++</span><code><span class="kw">class</span> <span class="cl">Car</span> {
+<span class="kw">public</span>:
+    <span class="cm">// Member variables (attributes)</span>
+    string brand;
+    <span class="kw">int</span> speed;
+
+    <span class="cm">// Member function (method)</span>
+    <span class="kw">void</span> <span class="fn">drive</span>() {
+        cout &lt;&lt; brand &lt;&lt; <span class="str">" is driving at "</span> &lt;&lt; speed &lt;&lt; <span class="str">" km/h"</span>;
+    }
+};
+
+<span class="kw">int</span> <span class="fn">main</span>() {
+    <span class="cl">Car</span> myCar;          <span class="cm">// Object created on stack</span>
+    myCar.brand = <span class="str">"Toyota"</span>;
+    myCar.speed = <span class="num">100</span>;
+    myCar.<span class="fn">drive</span>();       <span class="cm">// Output: Toyota is driving at 100 km/h</span>
+
+    <span class="cl">Car</span>* carPtr = <span class="kw">new</span> <span class="cl">Car</span>(); <span class="cm">// Object on heap</span>
+    carPtr->brand = <span class="str">"Honda"</span>;
+    <span class="kw">delete</span> carPtr;       <span class="cm">// Must free heap memory!</span>
+}</code></pre>
+          </div>
+          <div class="code-pane" id="cls-java">
+            <pre><span class="java-label">Java</span><code><span class="kw">class</span> <span class="cl">Car</span> {
+    <span class="cm">// Member variables (attributes)</span>
+    String brand;
+    <span class="kw">int</span> speed;
+
+    <span class="cm">// Member method</span>
+    <span class="kw">void</span> <span class="fn">drive</span>() {
+        System.out.<span class="fn">println</span>(brand + <span class="str">" is driving at "</span> + speed + <span class="str">" km/h"</span>);
+    }
+}
+
+<span class="kw">class</span> <span class="cl">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(String[] args) {
+        <span class="cl">Car</span> myCar = <span class="kw">new</span> <span class="cl">Car</span>(); <span class="cm">// All Java objects are on heap</span>
+        myCar.brand = <span class="str">"Toyota"</span>;
+        myCar.speed = <span class="num">100</span>;
+        myCar.<span class="fn">drive</span>();          <span class="cm">// Output: Toyota is driving at 100 km/h</span>
+        <span class="cm">// No delete needed — Garbage Collector handles memory</span>
+    }
+}</code></pre>
+          </div>
+        </div>
+      </div></div>
+    </div>
+
+    <!-- Constructor & Destructor -->
+    <div class="concept-card" onclick="toggleCard(this)">
+      <div class="concept-header">
+        <div class="concept-icon" style="background:rgba(124,58,237,0.15)">🔨</div>
+        <div>
+          <div class="concept-title">Constructor & Destructor</div>
+          <div class="concept-desc">Special methods for object creation and cleanup</div>
+        </div>
+        <div class="expand-arrow">▼</div>
+      </div>
+      <div class="concept-body"><div class="concept-content">
+        <div class="def-box"><strong>Constructor</strong> = auto-called when object is created. Used to initialize values. <strong>Destructor</strong> = auto-called when object is destroyed. Used to free resources. (Java has no destructor — uses Garbage Collector)</div>
+        <div class="key-points">
+          <h4>Key Points</h4>
+          <div class="kp-item"><div class="kp-dot"></div>Constructor has same name as class, no return type</div>
+          <div class="kp-item"><div class="kp-dot"></div>Can be overloaded (multiple constructors with different params)</div>
+          <div class="kp-item"><div class="kp-dot"></div>Default constructor = no parameters. Parameterized = takes arguments</div>
+          <div class="kp-item"><div class="kp-dot"></div>Copy constructor (C++) = creates object from another object</div>
+          <div class="kp-item"><div class="kp-dot"></div>In Java, destructor equivalent is <code>finalize()</code> — but rarely used</div>
+        </div>
+        <div class="code-tabs">
+          <div class="code-tab-btns">
+            <button class="code-tab-btn active" data-lang="cpp" onclick="switchCode(this, 'con-cpp')">C++</button>
+            <button class="code-tab-btn" data-lang="java" onclick="switchCode(this, 'con-java')">Java</button>
+          </div>
+          <div class="code-pane active" id="con-cpp">
+            <pre><span class="cpp-label">C++</span><code><span class="kw">class</span> <span class="cl">Student</span> {
+<span class="kw">public</span>:
+    string name;
+    <span class="kw">int</span> age;
+
+    <span class="cm">// Default constructor</span>
+    <span class="cl">Student</span>() {
+        name = <span class="str">"Unknown"</span>; age = <span class="num">0</span>;
+        cout &lt;&lt; <span class="str">"Object Created!\n"</span>;
+    }
+
+    <span class="cm">// Parameterized constructor</span>
+    <span class="cl">Student</span>(string n, <span class="kw">int</span> a) : name(n), age(a) {
+        cout &lt;&lt; name &lt;&lt; <span class="str">" created!\n"</span>;
+    }
+
+    <span class="cm">// Copy constructor</span>
+    <span class="cl">Student</span>(<span class="kw">const</span> <span class="cl">Student</span>&amp; s) {
+        name = s.name; age = s.age;
+        cout &lt;&lt; <span class="str">"Copied!\n"</span>;
+    }
+
+    <span class="cm">// Destructor (~ prefix)</span>
+    ~<span class="cl">Student</span>() {
+        cout &lt;&lt; name &lt;&lt; <span class="str">" destroyed!\n"</span>;
+    }
+};
+
+<span class="kw">int</span> <span class="fn">main</span>() {
+    <span class="cl">Student</span> s1;               <span class="cm">// Default constructor</span>
+    <span class="cl">Student</span> s2(<span class="str">"Alice"</span>, <span class="num">20</span>); <span class="cm">// Parameterized</span>
+    <span class="cl">Student</span> s3 = s2;          <span class="cm">// Copy constructor</span>
+} <span class="cm">// Destructors called automatically here</span></code></pre>
+          </div>
+          <div class="code-pane" id="con-java">
+            <pre><span class="java-label">Java</span><code><span class="kw">class</span> <span class="cl">Student</span> {
+    String name;
+    <span class="kw">int</span> age;
+
+    <span class="cm">// Default constructor</span>
+    <span class="cl">Student</span>() {
+        name = <span class="str">"Unknown"</span>; age = <span class="num">0</span>;
+        System.out.<span class="fn">println</span>(<span class="str">"Object Created!"</span>);
+    }
+
+    <span class="cm">// Parameterized constructor</span>
+    <span class="cl">Student</span>(String n, <span class="kw">int</span> a) {
+        <span class="kw">this</span>.name = n;   <span class="cm">// 'this' refers to current object</span>
+        <span class="kw">this</span>.age = a;
+        System.out.<span class="fn">println</span>(name + <span class="str">" created!"</span>);
+    }
+
+    <span class="cm">// No destructor in Java — GC handles cleanup</span>
+    <span class="cm">// finalize() is deprecated in newer Java versions</span>
+}
+
+<span class="kw">class</span> <span class="cl">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(String[] args) {
+        <span class="cl">Student</span> s1 = <span class="kw">new</span> <span class="cl">Student</span>();           <span class="cm">// Default</span>
+        <span class="cl">Student</span> s2 = <span class="kw">new</span> <span class="cl">Student</span>(<span class="str">"Alice"</span>, <span class="num">20</span>); <span class="cm">// Parameterized</span>
+    }
+}</code></pre>
+          </div>
+        </div>
+      </div></div>
+    </div>
+
+    <!-- Access Modifiers -->
+    <div class="concept-card" onclick="toggleCard(this)">
+      <div class="concept-header">
+        <div class="concept-icon" style="background:rgba(255,107,53,0.15)">🔒</div>
+        <div>
+          <div class="concept-title">Access Modifiers</div>
+          <div class="concept-desc">Control visibility of class members</div>
+        </div>
+        <div class="expand-arrow">▼</div>
+      </div>
+      <div class="concept-body"><div class="concept-content">
+        <div class="def-box">Access modifiers restrict who can access class members. They are fundamental to <strong>Encapsulation</strong>.</div>
+        <table class="comp-table">
+          <tr><th>Modifier</th><th>Same Class</th><th>Same Package/File</th><th>Subclass</th><th>Outside</th></tr>
+          <tr><td><code>public</code></td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+          <tr><td><code>protected</code></td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="no">✗</td></tr>
+          <tr><td><code>private</code></td><td class="yes">✓</td><td class="no">✗</td><td class="no">✗</td><td class="no">✗</td></tr>
+          <tr><td><code>default</code> (Java only)</td><td class="yes">✓</td><td class="yes">✓</td><td class="no">✗</td><td class="no">✗</td></tr>
+        </table>
+        <div class="code-tabs">
+          <div class="code-tab-btns">
+            <button class="code-tab-btn active" data-lang="cpp" onclick="switchCode(this, 'acc-cpp')">C++</button>
+            <button class="code-tab-btn" data-lang="java" onclick="switchCode(this, 'acc-java')">Java</button>
+          </div>
+          <div class="code-pane active" id="acc-cpp">
+            <pre><span class="cpp-label">C++</span><code><span class="kw">class</span> <span class="cl">BankAccount</span> {
+<span class="kw">private</span>:              <span class="cm">// Only accessible inside this class</span>
+    <span class="kw">double</span> balance;
+    string pin;
+
+<span class="kw">protected</span>:            <span class="cm">// Accessible in this class + child classes</span>
+    string ownerName;
+
+<span class="kw">public</span>:               <span class="cm">// Accessible from anywhere</span>
+    <span class="kw">void</span> <span class="fn">deposit</span>(<span class="kw">double</span> amount) {
+        <span class="kw">if</span>(amount > <span class="num">0</span>) balance += amount; <span class="cm">// can access private</span>
+    }
+    <span class="kw">double</span> <span class="fn">getBalance</span>() { <span class="kw">return</span> balance; } <span class="cm">// getter</span>
+};
+
+<span class="kw">int</span> <span class="fn">main</span>() {
+    <span class="cl">BankAccount</span> acc;
+    acc.<span class="fn">deposit</span>(<span class="num">1000</span>);      <span class="cm">// OK - public method</span>
+    <span class="cm">// acc.balance = 999;   ERROR - private!</span>
+}</code></pre>
+          </div>
+          <div class="code-pane" id="acc-java">
+            <pre><span class="java-label">Java</span><code><span class="kw">class</span> <span class="cl">BankAccount</span> {
+    <span class="kw">private double</span> balance;  <span class="cm">// Only inside this class</span>
+    <span class="kw">private</span> String pin;
+    <span class="kw">protected</span> String ownerName; <span class="cm">// This class + subclasses</span>
+
+    <span class="kw">public void</span> <span class="fn">deposit</span>(<span class="kw">double</span> amount) {
+        <span class="kw">if</span>(amount > <span class="num">0</span>) balance += amount;
+    }
+
+    <span class="cm">// Getter method (standard Java pattern)</span>
+    <span class="kw">public double</span> <span class="fn">getBalance</span>() { <span class="kw">return</span> balance; }
+
+    <span class="cm">// Setter with validation</span>
+    <span class="kw">public void</span> <span class="fn">setBalance</span>(<span class="kw">double</span> b) {
+        <span class="kw">if</span>(b >= <span class="num">0</span>) balance = b;
+    }
+}
+
+<span class="kw">class</span> <span class="cl">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(String[] args) {
+        <span class="cl">BankAccount</span> acc = <span class="kw">new</span> <span class="cl">BankAccount</span>();
+        acc.<span class="fn">deposit</span>(<span class="num">1000</span>);          <span class="cm">// OK</span>
+        <span class="cm">// acc.balance = 999;        ERROR - private!</span>
+    }
+}</code></pre>
+          </div>
+        </div>
+      </div></div>
+    </div>
+
+  </div>
+
+  <!-- ==================== 4 PILLARS ==================== -->
+  <div class="section" id="tab-pillars">
+
+    <!-- Encapsulation -->
+    <div class="concept-card" onclick="toggleCard(this)">
+      <div class="concept-header">
+        <div class="concept-icon" style="background:rgba(0,230,118,0.1)">🛡️</div>
+        <div>
+          <div class="concept-title">1. Encapsulation</div>
+          <div class="concept-desc">Hiding internal data, exposing only what's needed</div>
+        </div>
+        <div class="expand-arrow">▼</div>
+      </div>
+      <div class="concept-body"><div class="concept-content">
+        <div class="def-box"><strong>Encapsulation</strong> = wrapping data (variables) and methods together into a single unit (class), and restricting direct access to internal data using <strong>private</strong> variables + <strong>public getters/setters</strong>.</div>
+        <div class="key-points">
+          <h4>Why use it?</h4>
+          <div class="kp-item"><div class="kp-dot"></div>Data protection — prevents unauthorized modification</div>
+          <div class="kp-item"><div class="kp-dot"></div>Flexibility — can change internal implementation without affecting users</div>
+          <div class="kp-item"><div class="kp-dot"></div>Validation — setters can check values before assigning</div>
+          <div class="kp-item"><div class="kp-dot"></div>Real-life analogy: ATM machine — you interact via buttons, not internal circuits</div>
+        </div>
+        <div class="code-tabs">
+          <div class="code-tab-btns">
+            <button class="code-tab-btn active" data-lang="cpp" onclick="switchCode(this, 'enc-cpp')">C++</button>
+            <button class="code-tab-btn" data-lang="java" onclick="switchCode(this, 'enc-java')">Java</button>
+          </div>
+          <div class="code-pane active" id="enc-cpp">
+            <pre><span class="cpp-label">C++</span><code><span class="kw">class</span> <span class="cl">Person</span> {
+<span class="kw">private</span>:
+    string name;
+    <span class="kw">int</span> age;     <span class="cm">// Hidden from outside</span>
+
+<span class="kw">public</span>:
+    <span class="cm">// Setter with validation</span>
+    <span class="kw">void</span> <span class="fn">setAge</span>(<span class="kw">int</span> a) {
+        <span class="kw">if</span>(a > <span class="num">0</span> && a &lt; <span class="num">150</span>) age = a;
+        <span class="kw">else</span> cout &lt;&lt; <span class="str">"Invalid age!"</span>;
+    }
+
+    <span class="cm">// Getter</span>
+    <span class="kw">int</span> <span class="fn">getAge</span>() { <span class="kw">return</span> age; }
+    <span class="kw">void</span> <span class="fn">setName</span>(string n) { name = n; }
+    string <span class="fn">getName</span>() { <span class="kw">return</span> name; }
+};
+
+<span class="kw">int</span> <span class="fn">main</span>() {
+    <span class="cl">Person</span> p;
+    p.<span class="fn">setAge</span>(<span class="num">25</span>);     <span class="cm">// ✓ Controlled access</span>
+    p.<span class="fn">setAge</span>(-<span class="num">5</span>);    <span class="cm">// ✗ Rejected by validation</span>
+    <span class="cm">// p.age = -5;   ERROR! Private</span>
+}</code></pre>
+          </div>
+          <div class="code-pane" id="enc-java">
+            <pre><span class="java-label">Java</span><code><span class="kw">class</span> <span class="cl">Person</span> {
+    <span class="kw">private</span> String name;
+    <span class="kw">private int</span> age;    <span class="cm">// Encapsulated - hidden!</span>
+
+    <span class="cm">// Setter with validation</span>
+    <span class="kw">public void</span> <span class="fn">setAge</span>(<span class="kw">int</span> a) {
+        <span class="kw">if</span>(a > <span class="num">0</span> && a &lt; <span class="num">150</span>) <span class="kw">this</span>.age = a;
+        <span class="kw">else</span> System.out.<span class="fn">println</span>(<span class="str">"Invalid age!"</span>);
+    }
+
+    <span class="cm">// Getter</span>
+    <span class="kw">public int</span> <span class="fn">getAge</span>() { <span class="kw">return</span> age; }
+
+    <span class="kw">public void</span> <span class="fn">setName</span>(String n) { <span class="kw">this</span>.name = n; }
+    <span class="kw">public</span> String <span class="fn">getName</span>() { <span class="kw">return</span> name; }
+}
+
+<span class="kw">class</span> <span class="cl">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(String[] args) {
+        <span class="cl">Person</span> p = <span class="kw">new</span> <span class="cl">Person</span>();
+        p.<span class="fn">setAge</span>(<span class="num">25</span>);      <span class="cm">// ✓ Valid</span>
+        p.<span class="fn">setAge</span>(-<span class="num">5</span>);     <span class="cm">// Rejected by setter</span>
+        <span class="cm">// p.age = 25;    ERROR! private</span>
+    }
+}</code></pre>
+          </div>
+        </div>
+      </div></div>
+    </div>
+
+    <!-- Inheritance -->
+    <div class="concept-card" onclick="toggleCard(this)">
+      <div class="concept-header">
+        <div class="concept-icon" style="background:rgba(0,212,255,0.1)">🧬</div>
+        <div>
+          <div class="concept-title">2. Inheritance</div>
+          <div class="concept-desc">Child class acquires properties of parent class</div>
+        </div>
+        <div class="expand-arrow">▼</div>
+      </div>
+      <div class="concept-body"><div class="concept-content">
+        <div class="def-box"><strong>Inheritance</strong> = a class (child/derived) inherits properties and methods from another class (parent/base). Promotes <strong>code reuse</strong> and establishes an "IS-A" relationship.</div>
+        <div class="key-points">
+          <h4>Types of Inheritance</h4>
+          <div class="kp-item"><div class="kp-dot"></div><strong>Single:</strong> A → B (one parent, one child)</div>
+          <div class="kp-item"><div class="kp-dot"></div><strong>Multilevel:</strong> A → B → C (chain)</div>
+          <div class="kp-item"><div class="kp-dot"></div><strong>Multiple:</strong> A, B → C (C++ supports, Java does NOT via classes — only via interfaces)</div>
+          <div class="kp-item"><div class="kp-dot"></div><strong>Hierarchical:</strong> A → B, A → C (one parent, multiple children)</div>
+          <div class="kp-item"><div class="kp-dot"></div>Java uses <code>extends</code>; C++ uses <code>:</code> with access specifier</div>
+        </div>
+        <div class="code-tabs">
+          <div class="code-tab-btns">
+            <button class="code-tab-btn active" data-lang="cpp" onclick="switchCode(this, 'inh-cpp')">C++</button>
+            <button class="code-tab-btn" data-lang="java" onclick="switchCode(this, 'inh-java')">Java</button>
+          </div>
+          <div class="code-pane active" id="inh-cpp">
+            <pre><span class="cpp-label">C++</span><code><span class="cm">// Base (Parent) class</span>
+<span class="kw">class</span> <span class="cl">Animal</span> {
+<span class="kw">public</span>:
+    string name;
+    <span class="kw">void</span> <span class="fn">eat</span>() { cout &lt;&lt; name &lt;&lt; <span class="str">" is eating\n"</span>; }
+    <span class="kw">virtual void</span> <span class="fn">sound</span>() { cout &lt;&lt; <span class="str">"Some sound\n"</span>; }
+};
+
+<span class="cm">// Derived (Child) class — inherits from Animal</span>
+<span class="kw">class</span> <span class="cl">Dog</span> : <span class="kw">public</span> <span class="cl">Animal</span> {
+<span class="kw">public</span>:
+    <span class="kw">void</span> <span class="fn">fetch</span>() { cout &lt;&lt; name &lt;&lt; <span class="str">" fetches ball!\n"</span>; }
+    <span class="kw">void</span> <span class="fn">sound</span>() override { cout &lt;&lt; <span class="str">"Woof!\n"</span>; } <span class="cm">// Override</span>
+};
+
+<span class="cm">// Multilevel inheritance</span>
+<span class="kw">class</span> <span class="cl">GuideDog</span> : <span class="kw">public</span> <span class="cl">Dog</span> {
+<span class="kw">public</span>:
+    <span class="kw">void</span> <span class="fn">guide</span>() { cout &lt;&lt; <span class="str">"Guiding owner!\n"</span>; }
+};
+
+<span class="kw">int</span> <span class="fn">main</span>() {
+    <span class="cl">Dog</span> d;
+    d.name = <span class="str">"Rex"</span>;
+    d.<span class="fn">eat</span>();   <span class="cm">// Inherited from Animal</span>
+    d.<span class="fn">fetch</span>(); <span class="cm">// Own method</span>
+    d.<span class="fn">sound</span>(); <span class="cm">// Overridden: "Woof!"</span>
+}</code></pre>
+          </div>
+          <div class="code-pane" id="inh-java">
+            <pre><span class="java-label">Java</span><code><span class="cm">// Base (Parent) class</span>
+<span class="kw">class</span> <span class="cl">Animal</span> {
+    String name;
+    <span class="kw">void</span> <span class="fn">eat</span>() { System.out.<span class="fn">println</span>(name + <span class="str">" is eating"</span>); }
+    <span class="kw">void</span> <span class="fn">sound</span>() { System.out.<span class="fn">println</span>(<span class="str">"Some sound"</span>); }
+}
+
+<span class="cm">// Child class — use 'extends' keyword</span>
+<span class="kw">class</span> <span class="cl">Dog</span> <span class="kw">extends</span> <span class="cl">Animal</span> {
+    <span class="kw">void</span> <span class="fn">fetch</span>() { System.out.<span class="fn">println</span>(name + <span class="str">" fetches ball!"</span>); }
+
+    <span class="ann">@Override</span>
+    <span class="kw">void</span> <span class="fn">sound</span>() { System.out.<span class="fn">println</span>(<span class="str">"Woof!"</span>); } <span class="cm">// Override</span>
+}
+
+<span class="cm">// Multilevel</span>
+<span class="kw">class</span> <span class="cl">GuideDog</span> <span class="kw">extends</span> <span class="cl">Dog</span> {
+    <span class="kw">void</span> <span class="fn">guide</span>() { System.out.<span class="fn">println</span>(<span class="str">"Guiding owner!"</span>); }
+}
+
+<span class="kw">class</span> <span class="cl">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(String[] args) {
+        <span class="cl">Dog</span> d = <span class="kw">new</span> <span class="cl">Dog</span>();
+        d.name = <span class="str">"Rex"</span>;
+        d.<span class="fn">eat</span>();    <span class="cm">// Inherited</span>
+        d.<span class="fn">fetch</span>();  <span class="cm">// Own method</span>
+        d.<span class="fn">sound</span>();  <span class="cm">// Overridden: "Woof!"</span>
+
+        <span class="cm">// super keyword — access parent's method</span>
+        <span class="cm">// super.sound() would call Animal's sound()</span>
+    }
+}</code></pre>
+          </div>
+        </div>
+      </div></div>
+    </div>
+
+    <!-- Polymorphism -->
+    <div class="concept-card" onclick="toggleCard(this)">
+      <div class="concept-header">
+        <div class="concept-icon" style="background:rgba(255,152,0,0.1)">🎭</div>
+        <div>
+          <div class="concept-title">3. Polymorphism</div>
+          <div class="concept-desc">One interface, many forms</div>
+        </div>
+        <div class="expand-arrow">▼</div>
+      </div>
+      <div class="concept-body"><div class="concept-content">
+        <div class="def-box"><strong>Polymorphism</strong> = "many forms". Same function name behaves differently based on context. Two types: <strong>Compile-time</strong> (method overloading) and <strong>Runtime</strong> (method overriding via virtual functions).</div>
+        <div class="key-points">
+          <h4>Overloading vs Overriding</h4>
+          <div class="kp-item"><div class="kp-dot"></div><strong>Overloading (Compile-time):</strong> Same name, different parameters — resolved at compile time</div>
+          <div class="kp-item"><div class="kp-dot"></div><strong>Overriding (Runtime):</strong> Child redefines parent method — resolved at runtime via vtable</div>
+          <div class="kp-item"><div class="kp-dot"></div>In C++, use <code>virtual</code> keyword for runtime polymorphism</div>
+          <div class="kp-item"><div class="kp-dot"></div>In Java, all non-static methods are virtual by default</div>
+        </div>
+        <div class="code-tabs">
+          <div class="code-tab-btns">
+            <button class="code-tab-btn active" data-lang="cpp" onclick="switchCode(this, 'pol-cpp')">C++</button>
+            <button class="code-tab-btn" data-lang="java" onclick="switchCode(this, 'pol-java')">Java</button>
+          </div>
+          <div class="code-pane active" id="pol-cpp">
+            <pre><span class="cpp-label">C++</span><code><span class="cm">// COMPILE-TIME POLYMORPHISM (Overloading)</span>
+<span class="kw">class</span> <span class="cl">Calculator</span> {
+<span class="kw">public</span>:
+    <span class="kw">int</span> <span class="fn">add</span>(<span class="kw">int</span> a, <span class="kw">int</span> b) { <span class="kw">return</span> a+b; }
+    <span class="kw">double</span> <span class="fn">add</span>(<span class="kw">double</span> a, <span class="kw">double</span> b) { <span class="kw">return</span> a+b; } <span class="cm">// Same name!</span>
+    <span class="kw">int</span> <span class="fn">add</span>(<span class="kw">int</span> a, <span class="kw">int</span> b, <span class="kw">int</span> c) { <span class="kw">return</span> a+b+c; }
+};
+
+<span class="cm">// RUNTIME POLYMORPHISM (Overriding + virtual)</span>
+<span class="kw">class</span> <span class="cl">Shape</span> {
+<span class="kw">public</span>:
+    <span class="kw">virtual double</span> <span class="fn">area</span>() { <span class="kw">return</span> <span class="num">0</span>; } <span class="cm">// virtual!</span>
+    <span class="kw">virtual</span> ~<span class="cl">Shape</span>() {}
+};
+
+<span class="kw">class</span> <span class="cl">Circle</span> : <span class="kw">public</span> <span class="cl">Shape</span> {
+    <span class="kw">double</span> r;
+<span class="kw">public</span>:
+    <span class="cl">Circle</span>(<span class="kw">double</span> r) : r(r) {}
+    <span class="kw">double</span> <span class="fn">area</span>() override { <span class="kw">return</span> <span class="num">3.14</span> * r * r; }
+};
+
+<span class="kw">class</span> <span class="cl">Rect</span> : <span class="kw">public</span> <span class="cl">Shape</span> {
+    <span class="kw">double</span> w, h;
+<span class="kw">public</span>:
+    <span class="cl">Rect</span>(<span class="kw">double</span> w, <span class="kw">double</span> h) : w(w), h(h) {}
+    <span class="kw">double</span> <span class="fn">area</span>() override { <span class="kw">return</span> w * h; }
+};
+
+<span class="kw">int</span> <span class="fn">main</span>() {
+    <span class="cl">Shape</span>* s1 = <span class="kw">new</span> <span class="cl">Circle</span>(<span class="num">5</span>);
+    <span class="cl">Shape</span>* s2 = <span class="kw">new</span> <span class="cl">Rect</span>(<span class="num">4</span>, <span class="num">6</span>);
+
+    cout &lt;&lt; s1-><span class="fn">area</span>(); <span class="cm">// Calls Circle::area() — 78.5</span>
+    cout &lt;&lt; s2-><span class="fn">area</span>(); <span class="cm">// Calls Rect::area()   — 24</span>
+    <span class="cm">// Same pointer type (Shape*), different behavior!</span>
+}</code></pre>
+          </div>
+          <div class="code-pane" id="pol-java">
+            <pre><span class="java-label">Java</span><code><span class="cm">// COMPILE-TIME: Method Overloading</span>
+<span class="kw">class</span> <span class="cl">Calculator</span> {
+    <span class="kw">int</span> <span class="fn">add</span>(<span class="kw">int</span> a, <span class="kw">int</span> b) { <span class="kw">return</span> a+b; }
+    <span class="kw">double</span> <span class="fn">add</span>(<span class="kw">double</span> a, <span class="kw">double</span> b) { <span class="kw">return</span> a+b; }
+    <span class="kw">int</span> <span class="fn">add</span>(<span class="kw">int</span> a, <span class="kw">int</span> b, <span class="kw">int</span> c) { <span class="kw">return</span> a+b+c; }
+}
+
+<span class="cm">// RUNTIME: Method Overriding</span>
+<span class="kw">class</span> <span class="cl">Shape</span> {
+    <span class="kw">double</span> <span class="fn">area</span>() { <span class="kw">return</span> <span class="num">0</span>; } <span class="cm">// All methods virtual in Java</span>
+}
+
+<span class="kw">class</span> <span class="cl">Circle</span> <span class="kw">extends</span> <span class="cl">Shape</span> {
+    <span class="kw">double</span> r;
+    <span class="cl">Circle</span>(<span class="kw">double</span> r) { <span class="kw">this</span>.r = r; }
+
+    <span class="ann">@Override</span>
+    <span class="kw">double</span> <span class="fn">area</span>() { <span class="kw">return</span> <span class="num">3.14</span> * r * r; }
+}
+
+<span class="kw">class</span> <span class="cl">Rect</span> <span class="kw">extends</span> <span class="cl">Shape</span> {
+    <span class="kw">double</span> w, h;
+    <span class="cl">Rect</span>(<span class="kw">double</span> w, <span class="kw">double</span> h) { <span class="kw">this</span>.w=w; <span class="kw">this</span>.h=h; }
+
+    <span class="ann">@Override</span>
+    <span class="kw">double</span> <span class="fn">area</span>() { <span class="kw">return</span> w * h; }
+}
+
+<span class="kw">class</span> <span class="cl">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(String[] args) {
+        <span class="cl">Shape</span> s1 = <span class="kw">new</span> <span class="cl">Circle</span>(<span class="num">5</span>);  <span class="cm">// Upcasting</span>
+        <span class="cl">Shape</span> s2 = <span class="kw">new</span> <span class="cl">Rect</span>(<span class="num">4</span>, <span class="num">6</span>);
+
+        System.out.<span class="fn">println</span>(s1.<span class="fn">area</span>()); <span class="cm">// 78.5 — Circle's area</span>
+        System.out.<span class="fn">println</span>(s2.<span class="fn">area</span>()); <span class="cm">// 24   — Rect's area</span>
+    }
+}</code></pre>
+          </div>
+        </div>
+      </div></div>
+    </div>
+
+    <!-- Abstraction -->
+    <div class="concept-card" onclick="toggleCard(this)">
+      <div class="concept-header">
+        <div class="concept-icon" style="background:rgba(124,58,237,0.15)">🧩</div>
+        <div>
+          <div class="concept-title">4. Abstraction</div>
+          <div class="concept-desc">Hiding complexity, showing only essentials</div>
+        </div>
+        <div class="expand-arrow">▼</div>
+      </div>
+      <div class="concept-body"><div class="concept-content">
+        <div class="def-box"><strong>Abstraction</strong> = showing only essential features and hiding implementation details. Achieved via <strong>abstract classes</strong> and <strong>interfaces</strong>. Real-life analogy: You drive a car without knowing how the engine works.</div>
+        <div class="key-points">
+          <h4>Abstract Class vs Interface</h4>
+          <div class="kp-item"><div class="kp-dot"></div><strong>Abstract class:</strong> Can have both abstract (no body) and concrete (with body) methods. Can have constructors and state</div>
+          <div class="kp-item"><div class="kp-dot"></div><strong>Interface:</strong> All methods are abstract by default (in Java 7). A class can implement multiple interfaces (solves multiple inheritance problem)</div>
+          <div class="kp-item"><div class="kp-dot"></div>C++ uses pure virtual functions (<code>= 0</code>) for abstraction</div>
+          <div class="kp-item"><div class="kp-dot"></div>You CANNOT create an object of an abstract class directly</div>
+        </div>
+        <div class="code-tabs">
+          <div class="code-tab-btns">
+            <button class="code-tab-btn active" data-lang="cpp" onclick="switchCode(this, 'abs-cpp')">C++</button>
+            <button class="code-tab-btn" data-lang="java" onclick="switchCode(this, 'abs-java')">Java</button>
+          </div>
+          <div class="code-pane active" id="abs-cpp">
+            <pre><span class="cpp-label">C++</span><code><span class="cm">// Abstract class (has at least one pure virtual function)</span>
+<span class="kw">class</span> <span class="cl">Vehicle</span> {
+<span class="kw">public</span>:
+    <span class="kw">virtual void</span> <span class="fn">start</span>() = <span class="num">0</span>;   <span class="cm">// Pure virtual = abstract</span>
+    <span class="kw">virtual void</span> <span class="fn">stop</span>() = <span class="num">0</span>;    <span class="cm">// Must be overridden</span>
+
+    <span class="kw">void</span> <span class="fn">fuel</span>() {                 <span class="cm">// Concrete method</span>
+        cout &lt;&lt; <span class="str">"Adding fuel...\n"</span>;
+    }
+    <span class="kw">virtual</span> ~<span class="cl">Vehicle</span>() {}
+};
+
+<span class="cm">// Must implement ALL pure virtual methods</span>
+<span class="kw">class</span> <span class="cl">Car</span> : <span class="kw">public</span> <span class="cl">Vehicle</span> {
+<span class="kw">public</span>:
+    <span class="kw">void</span> <span class="fn">start</span>() override { cout &lt;&lt; <span class="str">"Car started!\n"</span>; }
+    <span class="kw">void</span> <span class="fn">stop</span>()  override { cout &lt;&lt; <span class="str">"Car stopped!\n"</span>; }
+};
+
+<span class="kw">int</span> <span class="fn">main</span>() {
+    <span class="cm">// Vehicle v;  ERROR! Cannot instantiate abstract class</span>
+    <span class="cl">Vehicle</span>* v = <span class="kw">new</span> <span class="cl">Car</span>();
+    v-><span class="fn">start</span>();   <span class="cm">// Car started!</span>
+    v-><span class="fn">fuel</span>();    <span class="cm">// Adding fuel...</span>
+    <span class="kw">delete</span> v;
+}</code></pre>
+          </div>
+          <div class="code-pane" id="abs-java">
+            <pre><span class="java-label">Java</span><code><span class="cm">// Abstract class</span>
+<span class="kw">abstract class</span> <span class="cl">Vehicle</span> {
+    <span class="kw">abstract void</span> <span class="fn">start</span>();   <span class="cm">// Abstract — no body</span>
+    <span class="kw">abstract void</span> <span class="fn">stop</span>();    <span class="cm">// Must be implemented</span>
+
+    <span class="kw">void</span> <span class="fn">fuel</span>() {             <span class="cm">// Concrete method</span>
+        System.out.<span class="fn">println</span>(<span class="str">"Adding fuel..."</span>);
+    }
+}
+
+<span class="cm">// Interface — 100% abstract (Java 7 style)</span>
+<span class="kw">interface</span> <span class="cl">Drivable</span> {
+    <span class="kw">void</span> <span class="fn">drive</span>();   <span class="cm">// public abstract by default</span>
+    <span class="kw">void</span> <span class="fn">park</span>();
+}
+
+<span class="cm">// Can extend ONE abstract class + implement MANY interfaces</span>
+<span class="kw">class</span> <span class="cl">Car</span> <span class="kw">extends</span> <span class="cl">Vehicle</span> <span class="kw">implements</span> <span class="cl">Drivable</span> {
+    <span class="ann">@Override</span> <span class="kw">public void</span> <span class="fn">start</span>() { System.out.<span class="fn">println</span>(<span class="str">"Car started!"</span>); }
+    <span class="ann">@Override</span> <span class="kw">public void</span> <span class="fn">stop</span>()  { System.out.<span class="fn">println</span>(<span class="str">"Car stopped!"</span>); }
+    <span class="ann">@Override</span> <span class="kw">public void</span> <span class="fn">drive</span>() { System.out.<span class="fn">println</span>(<span class="str">"Driving!"</span>); }
+    <span class="ann">@Override</span> <span class="kw">public void</span> <span class="fn">park</span>()  { System.out.<span class="fn">println</span>(<span class="str">"Parked!"</span>); }
+}
+
+<span class="kw">class</span> <span class="cl">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(String[] args) {
+        <span class="cm">// Vehicle v = new Vehicle(); ERROR - abstract!</span>
+        <span class="cl">Vehicle</span> v = <span class="kw">new</span> <span class="cl">Car</span>();
+        v.<span class="fn">start</span>();
+        v.<span class="fn">fuel</span>();
+    }
+}</code></pre>
+          </div>
+        </div>
+      </div></div>
+    </div>
+
+  </div>
+
+  <!-- ==================== ADVANCED ==================== -->
+  <div class="section" id="tab-advanced">
+
+    <div class="concept-card" onclick="toggleCard(this)">
+      <div class="concept-header">
+        <div class="concept-icon" style="background:rgba(255,107,53,0.1)">👫</div>
+        <div><div class="concept-title">Friend Function (C++ only)</div><div class="concept-desc">External function accessing private members</div></div>
+        <div class="expand-arrow">▼</div>
+      </div>
+      <div class="concept-body"><div class="concept-content">
+        <div class="def-box">A <strong>friend function</strong> is NOT a member of the class, but is granted access to its private and protected members. Declared using the <code>friend</code> keyword inside the class.</div>
+        <div class="code-tabs">
+          <div class="code-tab-btns">
+            <button class="code-tab-btn active" data-lang="cpp" onclick="switchCode(this, 'frnd-cpp')">C++</button>
+          </div>
+          <div class="code-pane active" id="frnd-cpp">
+            <pre><span class="cpp-label">C++</span><code><span class="kw">class</span> <span class="cl">Box</span> {
+<span class="kw">private</span>:
+    <span class="kw">double</span> width;
+<span class="kw">public</span>:
+    <span class="cl">Box</span>(<span class="kw">double</span> w) : width(w) {}
+
+    <span class="cm">// Declare friend function</span>
+    <span class="kw">friend double</span> <span class="fn">getWidth</span>(<span class="cl">Box</span> b);
+};
+
+<span class="cm">// NOT a member, but can access private 'width'</span>
+<span class="kw">double</span> <span class="fn">getWidth</span>(<span class="cl">Box</span> b) {
+    <span class="kw">return</span> b.width; <span class="cm">// Allowed because of friend!</span>
+}
+
+<span class="kw">int</span> <span class="fn">main</span>() {
+    <span class="cl">Box</span> b(<span class="num">10.5</span>);
+    cout &lt;&lt; <span class="fn">getWidth</span>(b); <span class="cm">// 10.5</span>
+}</code></pre>
+          </div>
+        </div>
+      </div></div>
+    </div>
+
+    <div class="concept-card" onclick="toggleCard(this)">
+      <div class="concept-header">
+        <div class="concept-icon" style="background:rgba(0,230,118,0.1)">🔧</div>
+        <div><div class="concept-title">Static Members</div><div class="concept-desc">Shared across all objects of a class</div></div>
+        <div class="expand-arrow">▼</div>
+      </div>
+      <div class="concept-body"><div class="concept-content">
+        <div class="def-box">A <strong>static member</strong> (variable or method) belongs to the CLASS itself, not to any individual object. All objects share one copy of static variables.</div>
+        <div class="code-tabs">
+          <div class="code-tab-btns">
+            <button class="code-tab-btn active" data-lang="cpp" onclick="switchCode(this, 'sta-cpp')">C++</button>
+            <button class="code-tab-btn" data-lang="java" onclick="switchCode(this, 'sta-java')">Java</button>
+          </div>
+          <div class="code-pane active" id="sta-cpp">
+            <pre><span class="cpp-label">C++</span><code><span class="kw">class</span> <span class="cl">Counter</span> {
+<span class="kw">public</span>:
+    <span class="kw">static int</span> count;  <span class="cm">// Shared by ALL objects</span>
+    <span class="cl">Counter</span>() { count++; }
+    <span class="kw">static int</span> <span class="fn">getCount</span>() { <span class="kw">return</span> count; }
+};
+
+<span class="kw">int</span> <span class="cl">Counter</span>::count = <span class="num">0</span>; <span class="cm">// Must define outside class</span>
+
+<span class="kw">int</span> <span class="fn">main</span>() {
+    <span class="cl">Counter</span> c1, c2, c3;
+    cout &lt;&lt; <span class="cl">Counter</span>::<span class="fn">getCount</span>(); <span class="cm">// 3</span>
+}</code></pre>
+          </div>
+          <div class="code-pane" id="sta-java">
+            <pre><span class="java-label">Java</span><code><span class="kw">class</span> <span class="cl">Counter</span> {
+    <span class="kw">static int</span> count = <span class="num">0</span>;  <span class="cm">// Shared by ALL objects</span>
+
+    <span class="cl">Counter</span>() { count++; }
+
+    <span class="kw">static int</span> <span class="fn">getCount</span>() { <span class="kw">return</span> count; }
+}
+
+<span class="kw">class</span> <span class="cl">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(String[] args) {
+        <span class="cl">Counter</span> c1 = <span class="kw">new</span> <span class="cl">Counter</span>();
+        <span class="cl">Counter</span> c2 = <span class="kw">new</span> <span class="cl">Counter</span>();
+        <span class="cl">Counter</span> c3 = <span class="kw">new</span> <span class="cl">Counter</span>();
+        System.out.<span class="fn">println</span>(<span class="cl">Counter</span>.<span class="fn">getCount</span>()); <span class="cm">// 3</span>
+    }
+}</code></pre>
+          </div>
+        </div>
+      </div></div>
+    </div>
+
+    <div class="concept-card" onclick="toggleCard(this)">
+      <div class="concept-header">
+        <div class="concept-icon" style="background:rgba(0,212,255,0.1)">🔁</div>
+        <div><div class="concept-title">this Pointer / Keyword</div><div class="concept-desc">Reference to current object</div></div>
+        <div class="expand-arrow">▼</div>
+      </div>
+      <div class="concept-body"><div class="concept-content">
+        <div class="def-box"><code>this</code> refers to the <strong>current object</strong> that called the method. Used to distinguish between member variables and parameters with the same name, and to return the current object.</div>
+        <div class="code-tabs">
+          <div class="code-tab-btns">
+            <button class="code-tab-btn active" data-lang="cpp" onclick="switchCode(this, 'thi-cpp')">C++</button>
+            <button class="code-tab-btn" data-lang="java" onclick="switchCode(this, 'thi-java')">Java</button>
+          </div>
+          <div class="code-pane active" id="thi-cpp">
+            <pre><span class="cpp-label">C++</span><code><span class="kw">class</span> <span class="cl">MyClass</span> {
+    <span class="kw">int</span> x;
+<span class="kw">public</span>:
+    <span class="kw">void</span> <span class="fn">setX</span>(<span class="kw">int</span> x) {
+        <span class="kw">this</span>->x = x; <span class="cm">// this->x = member, x = param</span>
+    }
+    <span class="cm">// Method chaining with 'this'</span>
+    <span class="cl">MyClass</span>& <span class="fn">increment</span>() {
+        x++;
+        <span class="kw">return</span> *<span class="kw">this</span>; <span class="cm">// Return current object</span>
+    }
+    <span class="kw">void</span> <span class="fn">print</span>() { cout &lt;&lt; x; }
+};
+
+<span class="kw">int</span> <span class="fn">main</span>() {
+    <span class="cl">MyClass</span> obj;
+    obj.<span class="fn">setX</span>(<span class="num">5</span>);
+    obj.<span class="fn">increment</span>().<span class="fn">increment</span>().<span class="fn">print</span>(); <span class="cm">// 7 (chaining!)</span>
+}</code></pre>
+          </div>
+          <div class="code-pane" id="thi-java">
+            <pre><span class="java-label">Java</span><code><span class="kw">class</span> <span class="cl">MyClass</span> {
+    <span class="kw">int</span> x;
+
+    <span class="kw">void</span> <span class="fn">setX</span>(<span class="kw">int</span> x) {
+        <span class="kw">this</span>.x = x; <span class="cm">// this.x = member, x = parameter</span>
+    }
+
+    <span class="cm">// Constructor chaining with this()</span>
+    <span class="cl">MyClass</span>() {
+        <span class="kw">this</span>(<span class="num">0</span>); <span class="cm">// Calls parameterized constructor</span>
+    }
+    <span class="cl">MyClass</span>(<span class="kw">int</span> x) {
+        <span class="kw">this</span>.x = x;
+    }
+
+    <span class="cm">// Return this for method chaining</span>
+    <span class="cl">MyClass</span> <span class="fn">increment</span>() {
+        x++;
+        <span class="kw">return this</span>;
+    }
+}
+
+<span class="kw">class</span> <span class="cl">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(String[] args) {
+        <span class="cl">MyClass</span> obj = <span class="kw">new</span> <span class="cl">MyClass</span>(<span class="num">5</span>);
+        obj.<span class="fn">increment</span>().<span class="fn">increment</span>(); <span class="cm">// x = 7</span>
+    }
+}</code></pre>
+          </div>
+        </div>
+      </div></div>
+    </div>
+
+  </div>
+
+  <!-- ==================== COMPARE ==================== -->
+  <div class="section" id="tab-compare">
+    <div style="background:var(--card); border:1px solid var(--border); border-radius:16px; padding:24px; margin-bottom:24px;">
+      <h3 style="margin-bottom:20px; font-size:1.1rem;">C++ vs Java — Key OOP Differences</h3>
+      <table class="comp-table">
+        <tr><th>Feature</th><th>C++</th><th>Java</th></tr>
+        <tr><td>Memory Management</td><td>Manual (<code>new</code>/<code>delete</code>)</td><td>Automatic (Garbage Collector)</td></tr>
+        <tr><td>Multiple Inheritance</td><td class="yes">✓ Via classes</td><td>Only via Interfaces</td></tr>
+        <tr><td>Destructor</td><td class="yes">✓ <code>~ClassName()</code></td><td class="no">✗ (GC handles)</td></tr>
+        <tr><td>Pointers</td><td class="yes">✓ Full pointer support</td><td class="no">✗ (References only)</td></tr>
+        <tr><td>Friend function</td><td class="yes">✓ Supported</td><td class="no">✗ Not available</td></tr>
+        <tr><td>Default virtual</td><td>No — use <code>virtual</code></td><td class="yes">Yes — all methods</td></tr>
+        <tr><td>Pure virtual / Abstract</td><td><code>= 0</code></td><td><code>abstract</code> keyword</td></tr>
+        <tr><td>Interface</td><td>No (use pure abstract)</td><td class="yes">✓ <code>interface</code> keyword</td></tr>
+        <tr><td>Operator overloading</td><td class="yes">✓ Supported</td><td class="no">✗ Not supported</td></tr>
+        <tr><td>Platform</td><td>Platform-dependent</td><td>Platform-independent (JVM)</td></tr>
+        <tr><td>Access default</td><td><code>private</code> in class</td><td><code>package-private</code></td></tr>
+        <tr><td><code>super</code> / parent call</td><td><code>ParentClass::method()</code></td><td><code>super.method()</code></td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- ==================== QUIZ ==================== -->
+  <div class="section" id="tab-quiz">
+    <div class="score-display">
+      <div class="score-num" id="scoreNum">0/0</div>
+      <div class="score-label">Quiz Score — answer questions to track progress</div>
+    </div>
+
+    <div class="quiz-card" id="q1">
+      <div class="quiz-q">Q1. Which OOP concept is implemented when we use <span>private</span> variables with <span>public</span> getters/setters?</div>
+      <div class="quiz-options">
+        <div class="quiz-opt" onclick="answer(this,'q1',false,'exp1')">Inheritance</div>
+        <div class="quiz-opt" onclick="answer(this,'q1',true,'exp1')">Encapsulation</div>
+        <div class="quiz-opt" onclick="answer(this,'q1',false,'exp1')">Polymorphism</div>
+        <div class="quiz-opt" onclick="answer(this,'q1',false,'exp1')">Abstraction</div>
+      </div>
+      <div class="quiz-explanation correct-exp" id="exp1">✓ Correct! Encapsulation = wrapping data (private variables) and controlling access through public methods. This protects data integrity.</div>
+    </div>
+
+    <div class="quiz-card" id="q2">
+      <div class="quiz-q">Q2. What is the output? In C++: <span>Shape* s = new Circle(5);</span> when Circle overrides <span>area()</span> of abstract Shape — which area() is called?</div>
+      <div class="quiz-options">
+        <div class="quiz-opt" onclick="answer(this,'q2',false,'exp2')">Shape's area()</div>
+        <div class="quiz-opt" onclick="answer(this,'q2',true,'exp2')">Circle's area()</div>
+        <div class="quiz-opt" onclick="answer(this,'q2',false,'exp2')">Compilation Error</div>
+        <div class="quiz-opt" onclick="answer(this,'q2',false,'exp2')">Runtime Error</div>
+      </div>
+      <div class="quiz-explanation correct-exp" id="exp2">✓ Circle's area() — This is Runtime Polymorphism! The virtual keyword ensures the correct overridden method is called based on the actual object type at runtime (vtable dispatch).</div>
+    </div>
+
+    <div class="quiz-card" id="q3">
+      <div class="quiz-q">Q3. Java does NOT support multiple inheritance through classes. How is it achieved?</div>
+      <div class="quiz-options">
+        <div class="quiz-opt" onclick="answer(this,'q3',false,'exp3')">Using abstract classes</div>
+        <div class="quiz-opt" onclick="answer(this,'q3',false,'exp3')">Using the extends keyword twice</div>
+        <div class="quiz-opt" onclick="answer(this,'q3',true,'exp3')">Using interfaces with implements</div>
+        <div class="quiz-opt" onclick="answer(this,'q3',false,'exp3')">It's not possible at all</div>
+      </div>
+      <div class="quiz-explanation correct-exp" id="exp3">✓ Correct! Java solves the Diamond Problem by not allowing multiple class inheritance, but a class can implement multiple interfaces: class C implements A, B {}.</div>
+    </div>
+
+    <div class="quiz-card" id="q4">
+      <div class="quiz-q">Q4. What is the difference between method <span>overloading</span> and method <span>overriding</span>?</div>
+      <div class="quiz-options">
+        <div class="quiz-opt" onclick="answer(this,'q4',false,'exp4')">They are the same thing</div>
+        <div class="quiz-opt" onclick="answer(this,'q4',true,'exp4')">Overloading = same name, different params (compile-time). Overriding = child redefines parent method (runtime)</div>
+        <div class="quiz-opt" onclick="answer(this,'q4',false,'exp4')">Overriding is compile-time, overloading is runtime</div>
+        <div class="quiz-opt" onclick="answer(this,'q4',false,'exp4')">Overloading requires inheritance</div>
+      </div>
+      <div class="quiz-explanation correct-exp" id="exp4">✓ Exactly right! Overloading happens within the same class (same name, different parameters). Overriding happens across parent-child classes (same name, same signature).</div>
+    </div>
+
+    <div class="quiz-card" id="q5">
+      <div class="quiz-q">Q5. In C++, why must the destructor of a base class be declared <span>virtual</span>?</div>
+      <div class="quiz-options">
+        <div class="quiz-opt" onclick="answer(this,'q5',false,'exp5')">To prevent object creation</div>
+        <div class="quiz-opt" onclick="answer(this,'q5',false,'exp5')">It's just a naming convention</div>
+        <div class="quiz-opt" onclick="answer(this,'q5',true,'exp5')">To ensure the child class destructor is called when deleting via base pointer</div>
+        <div class="quiz-opt" onclick="answer(this,'q5',false,'exp5')">Virtual destructors are faster</div>
+      </div>
+      <div class="quiz-explanation correct-exp" id="exp5">✓ Without virtual destructor, deleting a derived object via a base pointer only calls the base destructor — causing a memory leak! Virtual ensures proper cleanup chain.</div>
+    </div>
+  </div>
+
+  <!-- ==================== CHEAT SHEET ==================== -->
+  <div class="section" id="tab-cheatsheet">
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;margin-bottom:20px;">
+      <h3 style="color:var(--accent);margin-bottom:4px;font-size:0.75rem;letter-spacing:2px;text-transform:uppercase;">⚡ Quick Interview Answers</h3>
+      <p style="color:var(--muted);font-size:0.85rem;margin-bottom:16px;">The one-liners you need to know cold</p>
+      <div class="cheat-grid">
+        <div class="cheat-item"><h4>What is OOP?</h4><p>A programming paradigm based on the concept of objects that contain data and code, centered around 4 pillars: Encapsulation, Inheritance, Polymorphism, Abstraction.</p></div>
+        <div class="cheat-item"><h4>Class vs Object</h4><p>Class is the blueprint/template. Object is an instance. Class = cookie-cutter. Objects = cookies made from it.</p></div>
+        <div class="cheat-item"><h4>Encapsulation</h4><p>Bundling data + methods together and hiding internal details. Achieved via <code>private</code> fields + <code>public</code> getters/setters.</p></div>
+        <div class="cheat-item"><h4>Inheritance</h4><p>Child class inherits properties of parent. Promotes code reuse. "IS-A" relationship. C++: <code>:</code>, Java: <code>extends</code>.</p></div>
+        <div class="cheat-item"><h4>Polymorphism</h4><p>Same interface, different behavior. Overloading = compile-time. Overriding = runtime (needs <code>virtual</code> in C++).</p></div>
+        <div class="cheat-item"><h4>Abstraction</h4><p>Show only what's necessary, hide implementation. Done via abstract classes and interfaces.</p></div>
+        <div class="cheat-item"><h4>Abstract class vs Interface</h4><p>Abstract class: partial implementation, can have constructor. Interface: 100% abstract, a class can implement many.</p></div>
+        <div class="cheat-item"><h4>Constructor</h4><p>Special method called automatically when object is created. Same name as class, no return type. Can be overloaded.</p></div>
+        <div class="cheat-item"><h4>C++ Destructor</h4><p><code>~ClassName()</code> — called when object is destroyed. Java has no destructor (GC handles it). Always make virtual in base class!</p></div>
+        <div class="cheat-item"><h4>Virtual function (C++)</h4><p>Enables runtime polymorphism. Without <code>virtual</code>, base class method is called even for derived objects. Java: all methods are virtual by default.</p></div>
+        <div class="cheat-item"><h4>this pointer</h4><p>Refers to the current object. Used to resolve naming conflicts between parameters and member variables.</p></div>
+        <div class="cheat-item"><h4>static member</h4><p>Belongs to the class, not individual objects. All instances share one copy. Access via <code>ClassName::member</code> (C++) or <code>ClassName.member</code> (Java).</p></div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- end container -->
+
+<script>
+  let opened = 0;
+  const totalCards = document.querySelectorAll('.concept-card').length;
+  let quizScore = 0, quizTotal = 0;
+
+  function toggleCard(card) {
+    const wasOpen = card.classList.contains('open');
+    card.classList.toggle('open');
+    if (!wasOpen) opened = Math.min(opened + 1, totalCards);
+    updateProgress();
+  }
+
+  function updateProgress() {
+    const pct = Math.round((opened / totalCards) * 100);
+    document.getElementById('progressFill').style.width = pct + '%';
+  }
+
+  function showTab(name) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('tab-' + name).classList.add('active');
+    event.target.classList.add('active');
+  }
+
+  function switchCode(btn, paneId) {
+    const tabs = btn.closest('.code-tabs');
+    tabs.querySelectorAll('.code-tab-btn').forEach(b => b.classList.remove('active'));
+    tabs.querySelectorAll('.code-pane').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(paneId).classList.add('active');
+    event.stopPropagation();
+  }
+
+  function answer(opt, qId, isCorrect, expId) {
+    const card = document.getElementById(qId);
+    if (card.dataset.answered) return;
+    card.dataset.answered = '1';
+    quizTotal++;
+
+    const opts = card.querySelectorAll('.quiz-opt');
+    opts.forEach(o => o.style.pointerEvents = 'none');
+    opt.classList.add(isCorrect ? 'correct' : 'wrong');
+    if (!isCorrect) {
+      opts.forEach(o => { if (o.classList.contains('correct')) return; });
+    }
+    if (isCorrect) quizScore++;
+
+    const exp = document.getElementById(expId);
+    exp.classList.add('show');
+    exp.className = 'quiz-explanation show ' + (isCorrect ? 'correct-exp' : 'wrong-exp');
+    if (!isCorrect) exp.textContent = '✗ Incorrect. ' + exp.textContent;
+
+    document.getElementById('scoreNum').textContent = quizScore + '/' + quizTotal;
+  }
+</script>
+</body>
+</html>
