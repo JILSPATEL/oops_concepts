@@ -1,14 +1,29 @@
-// This program demonstrates the following OOP concepts:
-// 1. Static members: a shared variable across all objects of the class
-// 2. Friend function: a non-member function that can access private data members
-// 3. Array of objects: storing multiple employee objects in one array
-// 4. Encapsulation: data members are private and accessed through member functions
-// 5. Object-oriented behavior: initialize, display, and compare employee data
-//
-// Where these concepts are used:
-// - totalEmployee is a static member used to count all employees.
-// - compareSalary is a friend function used to access private employee data.
-// - team[3] is an array of Employee objects created in main().
+/*
+Concept Explained: Static Members + Friend Function + Array of Objects
+
+This example models an employee system that keeps track of staff and compares salaries.
+
+1. Static member
+   - totalEmployee is declared as static inside the Employee class.
+   - It is shared among all objects of the class instead of being recreated for each object.
+   - This allows the system to track the total number of employees globally.
+
+2. Friend function
+   - compareSalary() is a standalone function but is declared as a friend of Employee.
+   - It can access the private data members name and salary.
+   - This is useful for operations that compare or analyze multiple objects.
+
+3. Array of objects
+   - The program creates an array named team[3] to hold three Employee objects.
+   - This is a common pattern when several objects of the same class are managed together.
+
+4. Encapsulation and organization
+   - Employee data is hidden using private members.
+   - Public methods like onboard() and display() control how data is entered and shown.
+
+5. Real-world use
+   - HR systems often keep employee records and analyze salary levels, headcount, and employee information.
+*/
 
 #include <bits/stdc++.h>
 using namespace std;

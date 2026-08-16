@@ -1,3 +1,29 @@
+/*
+Concept Explained: Constructors in C++
+
+This program demonstrates the different kinds of constructors used to initialize objects.
+
+1. Default constructor
+   - Student() is called when no values are passed.
+   - It initializes the object with default values, such as name = "Unknown" and age = 0.
+
+2. Parameterized constructor
+   - Student(string n, int a) accepts values and initializes the object with those values.
+   - This is useful when object creation needs custom data from the start.
+
+3. Default argument constructor
+   - Student(string n, int a = 18) gives a default value for age if the caller does not provide it.
+   - This reduces the need to overload construction logic unnecessarily.
+
+4. Copy constructor
+   - Student(Student &s) creates a new object as a copy of an existing one.
+   - It copies each field from the source object.
+
+5. Why constructors matter
+   - Constructors automatically initialize objects when they are created.
+   - They help create valid objects and reduce bugs caused by uninitialized data.
+*/
+
 #include<bits/stdc++.h>
 using namespace std;
 

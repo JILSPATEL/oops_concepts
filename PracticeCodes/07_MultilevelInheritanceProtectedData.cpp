@@ -1,3 +1,29 @@
+/*
+Concept Explained: Multilevel Inheritance + Protected Members
+
+This code demonstrates multilevel inheritance, where one class inherits from another and then another class inherits from that derived class.
+
+1. Base class: Server
+   - The class stores a serverName and defines a method ping().
+   - The member serverName is declared in the protected section so that derived classes can access it.
+
+2. Intermediate class: WebServer
+   - WebServer inherits from Server.
+   - It adds a new property, maxTraffic, and a custom method serveHTML().
+   - Because serverName is protected in Server, WebServer can use it directly.
+
+3. Another derived class: DatabaseServer
+   - DatabaseServer also inherits from Server.
+   - It adds database-specific behavior while reusing the common serverName and ping() functionality.
+
+4. Why this is important
+   - Multilevel inheritance helps design a hierarchy where common features are stored in a base class and specialized features are added in child classes.
+   - Protected members allow derived classes to access parent data while keeping it inaccessible to unrelated classes.
+
+5. Real-world example
+   - A general Server class can be shared by web servers, database servers, and mail servers, each adding its own specialized features.
+*/
+
 #include <bits/stdc++.h>
 using namespace std;
 

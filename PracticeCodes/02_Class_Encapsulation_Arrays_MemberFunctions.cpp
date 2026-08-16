@@ -1,10 +1,30 @@
 
-// This program demonstrates the following OOP concepts:
-// 1. Class creation and object instantiation
-// 2. Encapsulation using private data members and public member functions
-// 3. Use of arrays inside a class to store multiple records
-// 4. Member functions for initialization, validation, and display
-// 5. Access control to protect internal data
+/*
+Concept Explained: Encapsulation + Class Design + Arrays of Data
+
+This program models a shop inventory system using a class.
+
+1. Class design
+   - The class ShopInventory is created to manage a collection of items.
+   - It keeps itemId[] and itemPrice[] inside the class as private data members.
+   - The user cannot directly change the internal data without going through class methods.
+
+2. Encapsulation
+   - The private members are hidden from outside access.
+   - The public methods setItem() and display() provide controlled access to the data.
+   - The private validation function isValid() ensures that invalid prices are rejected.
+
+3. Arrays within a class
+   - The class uses arrays to store many product records.
+   - The counter variable tracks how many items are currently stored.
+
+4. Why this matters
+   - A class can represent a real-world entity, such as an inventory, while protecting its internal state.
+   - This prevents accidental corruption and keeps the object reliable.
+
+5. Real-world use case
+   - A retail system can store product details like product ID and price using a class-managed inventory.
+*/
 
 #include <bits/stdc++.h>
 using namespace std;

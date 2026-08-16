@@ -3,11 +3,28 @@
 using namespace std;
 
 /*
-Topic explained:
-- Inheritance: savingAccount inherits the properties and behavior of BankAccount.
-- Encapsulation: account data like balance is protected/kept private and accessed via methods.
-- Method overriding is not used here; instead, the derived class reuses inherited methods.
-- This example demonstrates single-level inheritance and the use of base-class methods in a child class.
+Concept Explained: Inheritance + Encapsulation
+
+This program demonstrates single-level inheritance using a banking example.
+
+1. Base class: BankAccount
+   - It stores the account number and balance.
+   - The balance is kept private so that direct access from outside the class is not allowed.
+   - The class provides public methods such as deposit(), withdraw(), and getBalance() to control how data is changed.
+
+2. Derived class: savingAccount
+   - It inherits the features of BankAccount using public inheritance.
+   - The derived class adds its own member interest and method addInterest().
+   - It reuses inherited methods like deposit() and getBalance() without rewriting them.
+
+3. Why this is important
+   - Inheritance promotes code reuse: we do not duplicate account logic in the savings account class.
+   - Encapsulation protects sensitive data and ensures valid operations happen through methods.
+   - This is a common design pattern in real-world systems where a specialized account type shares behavior from a general account type.
+
+4. Real-world idea
+   - A general bank account can be used for both checking and savings accounts.
+   - The specific account type adds extra behavior such as interest calculation while inheriting common account functionality.
 */
 
 class BankAccount{

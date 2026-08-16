@@ -1,3 +1,29 @@
+/*
+Concept Explained: Hierarchical Inheritance + Destructor Order
+
+This file demonstrates hierarchical inheritance, where one base class is shared by multiple derived classes.
+
+1. Base class: Vehicle
+   - It stores the common property maxSpeed.
+   - The destructor is virtual, which is important for safe resource cleanup in inheritance-based systems.
+
+2. Derived class: FourWheeler
+   - It inherits from Vehicle and adds numDoors.
+   - A FourWheeler is a more specific vehicle type.
+
+3. Derived class: ElectricCar
+   - It inherits from FourWheeler and adds batteryCapacity.
+   - ElectricCar reuses the properties of the vehicle hierarchy while extending functionality.
+
+4. Destructor order
+   - When an object of ElectricCar is destroyed, the destructors are called in reverse order of construction.
+   - First ElectricCar destructor runs, then FourWheeler destructor, and finally Vehicle destructor.
+
+5. Why this matters
+   - Hierarchical inheritance helps model a family of related classes with shared behavior and unique specialized data.
+   - Virtual destructors prevent undefined behavior when base-class pointers are used with derived objects.
+*/
+
 #include <bits/stdc++.h>
 using namespace std;
 
