@@ -24,6 +24,15 @@ This program shows a classic OOP problem called the diamond problem, which occur
 
 6. Real-world idea
    - This pattern appears in systems where multiple interfaces or features share common behavior but must be combined without duplicate data.
+
+Example:
+                 A
+                / \
+               /   \
+              B     C
+               \   /
+                \ /
+                 D
 */
 
 #include <bits/stdc++.h>
