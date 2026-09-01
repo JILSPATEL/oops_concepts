@@ -22,6 +22,13 @@ This code demonstrates multilevel inheritance, where one class inherits from ano
 
 5. Real-world example
    - A general Server class can be shared by web servers, database servers, and mail servers, each adding its own specialized features.
+Example:
+
+Animal
+  ↑
+ Dog
+  ↑
+Puppy
 */
 
 #include <bits/stdc++.h>
