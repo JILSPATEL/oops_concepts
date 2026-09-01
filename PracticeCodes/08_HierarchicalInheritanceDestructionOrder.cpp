@@ -22,6 +22,20 @@ This file demonstrates hierarchical inheritance, where one base class is shared 
 5. Why this matters
    - Hierarchical inheritance helps model a family of related classes with shared behavior and unique specialized data.
    - Virtual destructors prevent undefined behavior when base-class pointers are used with derived objects.
+
+Example:
+                 ┌───────────────┐
+                 │   Base Class  │
+                 │    Animal     │
+                 └───────┬───────┘
+                         │
+              ┌──────────┴──────────┐
+              │                     │
+              ▼                     ▼
+       ┌─────────────┐       ┌─────────────┐
+       │    Dog      │       │     Cat     │
+       │ Derived     │       │   Derived   │
+       └─────────────┘       └─────────────┘
 */
 
 #include <bits/stdc++.h>
