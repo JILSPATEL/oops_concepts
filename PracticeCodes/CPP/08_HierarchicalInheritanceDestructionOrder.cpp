@@ -42,9 +42,9 @@ Example:
 using namespace std;
 
 class Server{
-    Protected:
+    protected:
         string serverName;
-    Public:
+    public:
         Server(string name){
             serverName=name;
             cout<<"[Constructing Server] Server Name set to "<<serverName<<endl;

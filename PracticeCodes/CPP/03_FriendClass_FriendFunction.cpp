@@ -40,14 +40,6 @@ void printWidth(Box b){
     cout<<"Width of box : "<<b.width<<endl;
 };
 
-int main()
-{
-    Box b(10);
-    printWidth(b);
-
-    return 0;
-}
-
 //2. Friend Class
 class Bank{
     private:
@@ -67,10 +59,14 @@ class Auditor{
     }
 };
 
-int main(){
-    Bank b(1000);
+int main()
+{
+    Box b(10);
+    printWidth(b);
+
+    Bank bank(1000);
     Auditor a;
-    a.audit(b);
+    a.audit(bank);
 
     return 0;
 }
